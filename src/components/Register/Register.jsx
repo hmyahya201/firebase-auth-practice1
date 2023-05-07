@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import app from './../../firebase';
-import {GithubAuthProvider, GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, sendEmailVerification, signInWithPopup} from 'firebase/auth'
+import {GithubAuthProvider, GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, sendEmailVerification, signInWithPopup, updateProfile} from 'firebase/auth'
 import { Link } from 'react-router-dom';
 
 const Register = () => {
@@ -16,6 +16,7 @@ const Register = () => {
         event.preventDefault();
         const email = event.target.email.value;
         const password = event.target.password.value;
+        const name = event.target.name.value;
         setError("")
         setSuccess("")
         createUserWithEmailAndPassword(auth, email, password)
@@ -23,6 +24,8 @@ const Register = () => {
             const loggedInUser = result.user
             setSuccess("You have successfully registered")
             handleVerifyEmail(loggedInUser)
+            handelUpdateUser(loggedInUser, name)
+            console.log(loggedInUser)
             event.target.reset()
         })
         .catch(error=>{
@@ -62,12 +65,26 @@ const Register = () => {
             setError(error.message)
         })
     }
+    const handelUpdateUser = (user, name)=>{
+        updateProfile(user, {
+            displayName:name,
+            photoURL:""
+        })
+        .then(()=>{
+            alert("profile updated")
+        })
+
+    }
 
     return (
         <div>
             <h1>Register</h1>
              <div>
            <form onSubmit={handleSubmitForm}>
+                <div className="mb-3">
+                    <label className="form-label">Your name</label>
+                    <input type="text" name="name" className="form-control" placeholder="Enter email"/>
+                </div>
                 <div className="mb-3">
                     <label className="form-label">Email address</label>
                     <input type="email" name="email" className="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email"/>
